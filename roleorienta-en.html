@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>roleorienta — jobs the big job boards don’t show</title>
+<meta name="description" content="roleorienta brings together jobs from the big job boards and companies’ own career pages, tracks changes at employers and helps you prepare to apply.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#F4F2EC; --surface:#FFFFFF; --surface-2:#FBFAF6;
+    --border:#E4DED2; --border-strong:#D4CCBC;
+    --ink:#23272E; --ink-soft:#3C424B; --muted:#6E6960;
+    --accent:#B0673A; --accent-soft:#F0E2D2; --accent-ink:#7C481F;
+    --source:#0F766E; --source-soft:#DCEBE8; --source-ink:#0B5952;
+    --hidden:#9A5B2A; --hidden-soft:#F0E2D2; --hidden-ink:#7C481F;
+    --both:#2F7D4F; --both-soft:#DCEBE0; --both-ink:#1F5A38;
+    --unknown:#8A8478; --unknown-soft:#EFECE4;
+    --amber:#B7791F; --amber-soft:#F5E7C8;
+    --serif:"Fraunces",Georgia,"Times New Roman",serif;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --shadow:0 1px 2px rgba(30,25,15,.04),0 10px 30px -14px rgba(30,25,15,.16);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14171B; --surface:#1B1F25; --surface-2:#21262D;
+      --border:#2E353D; --border-strong:#3B434C;
+      --ink:#ECE6DB; --ink-soft:#C8C3B9; --muted:#969189;
+      --accent:#D89A63; --accent-soft:#33261A; --accent-ink:#E4B482;
+      --source:#58B7AC; --source-soft:#123734; --source-ink:#7FCFC5;
+      --hidden:#D79A5E; --hidden-soft:#33261A; --hidden-ink:#E4B482;
+      --both:#6BBF8A; --both-soft:#16301F; --both-ink:#9AD9B2;
+      --unknown:#7C8791; --unknown-soft:#242A31;
+      --amber:#E0B050; --amber-soft:#2C2413;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px -16px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14171B; --surface:#1B1F25; --surface-2:#21262D;
+    --border:#2E353D; --border-strong:#3B434C;
+    --ink:#ECE6DB; --ink-soft:#C8C3B9; --muted:#969189;
+    --accent:#D89A63; --accent-soft:#33261A; --accent-ink:#E4B482;
+    --source:#58B7AC; --source-soft:#123734; --source-ink:#7FCFC5;
+    --hidden:#D79A5E; --hidden-soft:#33261A; --hidden-ink:#E4B482;
+    --both:#6BBF8A; --both-soft:#16301F; --both-ink:#9AD9B2;
+    --unknown:#7C8791; --unknown-soft:#242A31;
+    --amber:#E0B050; --amber-soft:#2C2413;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px -16px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:80px}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  img{max-width:100%}
+  a{color:var(--accent)}
+  ::selection{background:var(--accent-soft);color:var(--accent-ink)}
+  h1,h2,h3,h4,p{margin:0}
+  .serif{font-family:var(--serif)}
+  .wrap{max-width:1140px;margin:0 auto;padding-inline:clamp(18px,4vw,40px)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+
+  /* top bar */
+  .topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .topbar-in{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-block:14px}
+  .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--serif);font-weight:600;font-size:22px;letter-spacing:-.01em}
+  .brand .mark{width:26px;height:26px;flex:none;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--source));position:relative}
+  .brand .mark::after{content:"";position:absolute;inset:8px 8px auto auto;width:7px;height:7px;border-radius:50%;background:var(--surface)}
+  .nav{display:flex;gap:24px;font-size:14px;font-weight:500}
+  .nav a{text-decoration:none;color:var(--ink-soft)}
+  .nav a:hover{color:var(--accent)}
+  .nav-cta{font-size:13.5px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--border-strong);border-radius:9px;padding:8px 14px;text-decoration:none}
+  .nav-cta:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  @media (max-width:760px){.nav{display:none}}
+
+  /* hero */
+  .hero{padding-top:clamp(40px,7vw,88px);padding-bottom:clamp(30px,5vw,56px)}
+  .hero-grid{display:grid;gap:clamp(30px,5vw,56px);align-items:center}
+  @media (min-width:900px){.hero-grid{grid-template-columns:1.05fr .95fr}}
+  .hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,6vw,60px);line-height:1.02;letter-spacing:-.015em;text-wrap:balance;margin:0 0 20px;color:var(--ink)}
+  .hero h1 em{font-style:italic;color:var(--accent)}
+  .standfirst{font-size:clamp(16px,2.1vw,19px);color:var(--ink-soft);max-width:52ch}
+  .standfirst b{color:var(--ink);font-weight:600}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--sans);font-size:15px;font-weight:600;text-decoration:none;border-radius:10px;padding:12px 20px;transition:transform .15s,background .15s,border-color .15s,color .15s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent)}
+  :root[data-theme="dark"] .btn-primary,:root:not([data-theme="light"]) .btn-primary{color:#1B1209}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn-primary{color:#1B1209}}
+  .btn-primary:hover{background:var(--accent-ink)}
+  .btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--border-strong)}
+  .btn-ghost:hover{border-color:var(--ink)}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:26px;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .hero-meta span{display:inline-flex;align-items:center;gap:8px}
+  .hero-meta .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+
+  /* generic card / pills */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .pill{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:6px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+  .pill.hidden{background:var(--hidden-soft);color:var(--hidden-ink)}
+  .pill.source{background:var(--source-soft);color:var(--source-ink)}
+  .pill.both{background:var(--both-soft);color:var(--both-ink)}
+  .pill.unknown{background:var(--unknown-soft);color:var(--muted);border:1px solid var(--border)}
+  .pill.fresh{background:var(--both-soft);color:var(--both-ink)}
+  .pill.stale{background:var(--amber-soft);color:var(--amber)}
+  .pill .d{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+  /* hero preview card */
+  .preview{position:relative}
+  .job-card{padding:20px 20px 18px;border-left:3px solid var(--hidden)}
+  .job-card .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .job-card h3{font-family:var(--serif);font-weight:600;font-size:19px;line-height:1.2;margin:0 0 5px;color:var(--ink)}
+  .job-card .org{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:0 0 16px}
+  .prov{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;display:grid;grid-template-columns:1fr 1fr;gap:11px 14px}
+  .prov .row .k{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+  .prov .row .v{font-size:13px;color:var(--ink);font-weight:500}
+  .prov .row .v.link{color:var(--accent)}
+  .match{margin-top:14px}
+  .match .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:12px;font-weight:500;padding:4px 10px;border-radius:999px;border:1px solid var(--border-strong);color:var(--ink-soft);background:var(--surface)}
+  .chip.hit{background:var(--both-soft);color:var(--both-ink);border-color:transparent}
+  .chip.gap{background:var(--surface-2);color:var(--muted);border-style:dashed}
+  .preview .float{position:absolute;right:-10px;bottom:-18px;background:var(--ink);color:var(--bg);border-radius:12px;padding:11px 15px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600}
+  .preview .float .n{font-family:var(--serif);font-size:20px;font-weight:600}
+  .preview .float .d{width:8px;height:8px;border-radius:50%;background:var(--both);flex:none}
+  @media (max-width:520px){.preview .float{position:static;margin-top:14px}}
+  .figcap{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:26px}
+
+  /* section scaffolding */
+  section[id]{scroll-margin-top:80px}
+  .section{padding-block:clamp(48px,7vw,84px)}
+  .section-head{max-width:60ch;margin-bottom:34px}
+  .section-head h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4vw,40px);line-height:1.06;letter-spacing:-.015em;text-wrap:balance;margin:0}
+  .section-head p{font-size:clamp(15px,1.9vw,17px);color:var(--ink-soft);margin-top:14px}
+
+  /* problem callout */
+  .callout{border:1px solid var(--border-strong);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+  .callout-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:22px 24px 6px}
+  .callout-head .tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+  .callout-head h2{font-family:var(--serif);font-weight:600;font-size:clamp(21px,3vw,27px);letter-spacing:-.01em;margin:0;color:var(--ink)}
+  .callout-body{padding:10px 24px 24px;display:grid;gap:16px}
+  @media (min-width:720px){.callout-body{grid-template-columns:1fr 1fr;gap:16px 36px}}
+  .callout-body p{margin:0;font-size:15px;color:var(--ink-soft)}
+  .callout-body .lead{font-family:var(--mono);font-size:12px;letter-spacing:.03em;color:var(--accent);display:block;margin-bottom:4px}
+  .callout-body b{color:var(--ink)}
+
+  /* differentiators grid */
+  .grid-4{display:grid;gap:16px}
+  @media (min-width:640px){.grid-4{grid-template-columns:1fr 1fr}}
+  @media (min-width:980px){.grid-4{grid-template-columns:repeat(4,1fr)}}
+  .feat{padding:22px 20px 20px}
+  .feat .num{font-family:var(--serif);font-style:italic;font-size:26px;color:var(--accent);line-height:1;margin-bottom:16px;display:block}
+  .feat h3{font-family:var(--sans);font-weight:600;font-size:16.5px;line-height:1.3;margin:0 0 8px;color:var(--ink)}
+  .feat p{font-size:14px;color:var(--ink-soft);margin:0}
+
+  /* scenarios / steps */
+  .steps{display:grid;gap:16px}
+  @media (min-width:720px){.steps{grid-template-columns:1fr 1fr}}
+  .step{padding:22px 22px 20px;display:grid;grid-template-columns:auto 1fr;gap:0 16px}
+  .step .badge{font-family:var(--mono);font-weight:500;font-size:13px;width:34px;height:34px;border-radius:9px;background:var(--surface-2);border:1px solid var(--border-strong);color:var(--accent);display:flex;align-items:center;justify-content:center}
+  .step .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .step h3{font-family:var(--sans);font-weight:600;font-size:16.5px;margin:0 0 7px;color:var(--ink)}
+  .step p{grid-column:2;font-size:14px;color:var(--ink-soft);margin:0}
+  .step .badge{grid-row:span 1}
+
+  /* feature rows */
+  .frow{display:grid;gap:clamp(28px,5vw,64px);align-items:center;margin-top:clamp(40px,6vw,72px)}
+  @media (min-width:860px){.frow{grid-template-columns:1fr 1fr}.frow.flip .copy{order:2}}
+  .frow .copy h2{font-family:var(--serif);font-weight:600;font-size:clamp(23px,3.3vw,32px);line-height:1.08;letter-spacing:-.01em;margin:0 0 16px;text-wrap:balance}
+  .frow .copy p{font-size:15.5px;color:var(--ink-soft);margin:0 0 14px}
+  .frow .copy .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .checklist{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:11px}
+  .checklist li{display:flex;gap:11px;font-size:14.5px;color:var(--ink-soft)}
+  .checklist li::before{content:"✓";color:var(--both);font-weight:700;flex:none}
+
+  /* mock: provenance panel */
+  .mock{padding:22px}
+  .mock-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+  .mock-head .t{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .diff{border-top:1px solid var(--border);margin-top:14px;padding-top:14px;display:grid;gap:10px}
+  .diff .drow{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:baseline;font-size:13.5px}
+  .diff .drow .field{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .diff .was{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border-strong)}
+  .diff .arrow{color:var(--accent);margin:0 6px}
+  .diff .now{color:var(--ink);font-weight:600}
+
+  /* mock: tech profile */
+  .techgroup+.techgroup{margin-top:14px}
+  .techgroup .gh{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+  .techgroup .gh .dot{width:9px;height:9px;border-radius:3px;flex:none}
+  .techgroup .gh .name{font-size:13px;font-weight:600;color:var(--ink)}
+  .techgroup .gh .name small{font-weight:400;color:var(--muted);font-family:var(--mono);font-size:11px;margin-left:2px}
+  .core .dot{background:var(--source)}
+  .req .dot{background:var(--accent)}
+  .ctx .dot{background:var(--unknown)}
+  .sample{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:16px;padding-top:12px;border-top:1px solid var(--border)}
+
+  /* mock: salary/lang */
+  .kv{display:grid;gap:12px}
+  .kv .item{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .kv .item:last-child{border-bottom:0;padding-bottom:0}
+  .kv .k{font-size:13.5px;color:var(--ink-soft)}
+  .kv .k small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+  .kv .v{font-size:14px;font-weight:600;color:var(--ink);text-align:right;white-space:nowrap}
+  .kv .v.muted{color:var(--muted);font-weight:500}
+  .tagline-mono{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:16px}
+
+  /* mock: pipeline */
+  .pipe{display:flex;flex-direction:column;gap:0}
+  .pstage{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);font-size:14px}
+  .pstage:last-child{border-bottom:0}
+  .pstage .node{width:13px;height:13px;border-radius:50%;border:2px solid var(--border-strong);background:var(--surface)}
+  .pstage.done .node{background:var(--both);border-color:var(--both)}
+  .pstage.cur .node{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+  .pstage .label{color:var(--ink)}
+  .pstage.todo .label{color:var(--muted)}
+  .pstage .when{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .snapshot{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:12.5px;color:var(--muted)}
+  .snapshot b{color:var(--ink)}
+
+  /* spotlight: scheduled auto-search */
+  .spotlight{display:grid;gap:clamp(24px,4vw,48px);align-items:center;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);border-radius:20px;padding:clamp(28px,4vw,46px);box-shadow:var(--shadow)}
+  @media (min-width:860px){.spotlight{grid-template-columns:1.05fr .95fr}}
+  .spotlight .eyebrow{color:var(--accent-ink)}
+  .spotlight h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4vw,40px);line-height:1.06;letter-spacing:-.015em;margin:0 0 14px;color:var(--ink)}
+  .spotlight-copy>p{font-size:16px;color:var(--ink-soft);margin:0}
+  .spotlight .checklist{margin-top:18px}
+  .spotlight .checklist li::before{color:var(--accent-ink)}
+  .sched-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .sched-when{font-family:var(--mono);font-size:14px;color:var(--ink);background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+  .sched-when .clock{color:var(--accent);font-size:16px;line-height:1}
+  .sched-when b{font-weight:600}
+  .sched-filters{margin-top:14px}
+  .sched-result{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:9px 18px;font-size:13.5px;color:var(--ink-soft)}
+  .sched-result .st{display:inline-flex;align-items:center;gap:7px}
+  .sched-result .st b{color:var(--ink)}
+  .sched-result .st .d{width:8px;height:8px;border-radius:50%;flex:none}
+
+  /* FAQ */
+  .faq{max-width:860px}
+  .faq details{border-bottom:1px solid var(--border)}
+  .faq summary{cursor:pointer;list-style:none;font-size:16px;font-weight:600;color:var(--ink);padding:20px 40px 20px 0;position:relative}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";position:absolute;right:6px;top:16px;font-size:22px;font-weight:400;color:var(--accent)}
+  .faq details[open] summary::after{content:"–"}
+  .faq details p{font-size:14.5px;color:var(--ink-soft);padding:0 40px 22px 0;margin:0;max-width:74ch}
+
+  /* outro */
+  .outro{background:#20242B;color:#F1ECE1;border:1px solid #2E353D;border-radius:22px;padding:clamp(36px,6vw,64px) clamp(24px,5vw,56px);text-align:center;margin-block:clamp(48px,7vw,80px)}
+  .outro .eyebrow{color:#E7A56B}
+  .outro h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4.2vw,42px);line-height:1.08;letter-spacing:-.015em;max-width:22ch;margin:0 auto;color:#F6F1E7}
+  .outro h2 em{font-style:italic;color:#E7A56B}
+  .outro>p{max-width:56ch;margin:18px auto 0;color:#CFC9BD;font-size:16px}
+  .start{display:grid;gap:22px;max-width:760px;margin:32px auto 0;text-align:left;border-top:1px solid rgba(255,255,255,.12);padding-top:28px}
+  @media (min-width:640px){.start{grid-template-columns:1fr 1fr}}
+  .start .lead{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#E7A56B;margin-bottom:8px;display:block}
+  .start h4{font-size:16px;font-weight:600;margin:0 0 6px;color:#F1ECE1}
+  .start p{font-size:14px;margin:0;color:#BDB8AC}
+
+  /* footer */
+  footer{border-top:1px solid var(--border);padding-block:32px 40px}
+  .foot-in{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+  footer p{font-size:12.5px;color:var(--muted);max-width:66ch;margin:0}
+  footer .brand{font-size:18px}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#top"><span class="mark" aria-hidden="true"></span>roleorienta</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#why">Problem</a>
+      <a href="#diff">Difference</a>
+      <a href="#how">How it works</a>
+      <a href="#auto">Auto-search</a>
+      <a href="#features">Features</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="nav-cta" href="#start">Get started</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Search · monitoring · job analysis</p>
+        <h1>Work is where<br>the big job boards <em>don’t reach.</em></h1>
+        <p class="standfirst">roleorienta brings together jobs from the big job boards and <b>companies’ own career pages</b>, tracks changes at employers and helps you prepare to apply.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#how">How it works <span aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="#features">Features</a>
+        </div>
+        <div class="hero-meta">
+          <span><i class="dot" aria-hidden="true"></i>Source and freshness, up front</span>
+          <span><i class="dot" aria-hidden="true"></i>A before → after history</span>
+          <span><i class="dot" aria-hidden="true"></i>Applications in one place</span>
+        </div>
+      </div>
+
+      <figure class="preview" style="margin:0">
+        <div class="card job-card">
+          <div class="tags">
+            <span class="pill hidden"><i class="d" aria-hidden="true"></i>Company site only</span>
+            <span class="pill fresh">Checked today</span>
+          </div>
+          <h3>Senior Backend Engineer</h3>
+          <p class="org">Northwind Labs · career page</p>
+          <div class="prov" aria-label="Source and freshness">
+            <div class="row"><span class="k">Source</span><span class="v link">careers.northwind.io ↗</span></div>
+            <div class="row"><span class="k">Where found</span><span class="v">Not on the job boards</span></div>
+            <div class="row"><span class="k">Found</span><span class="v">14 days ago</span></div>
+            <div class="row"><span class="k">Salary</span><span class="v">not stated</span></div>
+          </div>
+          <div class="match">
+            <div class="lbl">Match with your profile</div>
+            <div class="chips">
+              <span class="chip hit">Java ✓</span>
+              <span class="chip hit">PostgreSQL ✓</span>
+              <span class="chip hit">Spring ✓</span>
+              <span class="chip gap">Kafka · to learn</span>
+            </div>
+          </div>
+        </div>
+        <div class="float" aria-hidden="true"><span class="d"></span><span class="n">7</span>&nbsp;new jobs from career pages</div>
+        <figcaption class="figcap">Sample job card. Data shown schematically.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- WHY / PROBLEM -->
+  <section class="section wrap" id="why">
+    <div class="callout" role="region" aria-label="Problem">
+      <div class="callout-head">
+        <span class="tag">Why ordinary search isn’t enough</span>
+        <h2>You simply don’t see some of the jobs that fit</h2>
+      </div>
+      <div class="callout-body">
+        <p><span class="lead">A blind spot</span>Many employers post jobs <b>only on their own sites</b> — they never reach the big job boards. A job that fits exists, but you can’t see it where you’re used to looking.</p>
+        <p><span class="lead">You can’t cover it by hand</span>To avoid missing such jobs, you’d have to know dozens of companies, visit their pages regularly and <b>keep it all in your head</b>. That’s hard to keep up for long.</p>
+        <p><span class="lead">A cluttered feed</span>The big job boards’ interfaces are overloaded, the same jobs repeat, and the <b>source and freshness</b> of a listing are hard to make out.</p>
+        <p><span class="lead">Everything is scattered</span>Applications, notes and the history of requirements are spread across spreadsheets and bookmarks. Pulling it all together before an interview is a job in itself.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIFFERENTIATORS -->
+  <section class="section wrap" id="diff">
+    <div class="section-head">
+      <p class="eyebrow">What roleorienta does</p>
+      <h2>Four things the big job boards do poorly</h2>
+      <p>roleorienta works in depth, not in breadth: around your niche and your employers — and shows exactly what it found.</p>
+    </div>
+    <div class="grid-4">
+      <article class="card feat">
+        <span class="num" aria-hidden="true">01</span>
+        <h3>Depth in a narrow niche</h3>
+        <p>Sources are chosen for your specialization and market — nothing extraneous.</p>
+      </article>
+      <article class="card feat">
+        <span class="num" aria-hidden="true">02</span>
+        <h3>Monitoring changes</h3>
+        <p>Not a one-off search, but an ongoing watch over companies: how requirements, salary and terms change.</p>
+      </article>
+      <article class="card feat">
+        <span class="num" aria-hidden="true">03</span>
+        <h3>Data you can trust</h3>
+        <p>For every job you can see where it came from and when it was last checked. If something isn’t stated, it says so — the app doesn’t make things up for the source.</p>
+      </article>
+      <article class="card feat">
+        <span class="num" aria-hidden="true">04</span>
+        <h3>Every job found at the company</h3>
+        <p>Every job found at the employer is gathered into a technology profile — so you know what to highlight on your CV and in the interview.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS / SCENARIOS -->
+  <section class="section wrap" id="how">
+    <div class="section-head">
+      <p class="eyebrow">How it works</p>
+      <h2>From the first job to the interview result</h2>
+      <p>Four scenarios the product is built for — all in one clear interface.</p>
+    </div>
+    <div class="steps">
+      <article class="card step">
+        <span class="badge" aria-hidden="true">A</span>
+        <div><span class="tag">First search</span><h3>Results right away, not a blank screen</h3></div>
+        <p>Set your region, specialization, the technologies you need and the work format — and see current jobs right away, from a saved and automatically growing list of employers. Among them will be jobs from career pages. Companies that fit can be added to monitoring.</p>
+      </article>
+      <article class="card step">
+        <span class="badge" aria-hidden="true">B</span>
+        <div><span class="tag">Subscription and monitoring</span><h3>Company monitoring — always a current picture</h3></div>
+        <p>Save a search and pick the companies you care about. From then on the app, <b>on a schedule you set</b>, looks for jobs according to your filters, grows the list of employers and shows new and changed jobs — with source, update date, salary and language requirements.</p>
+      </article>
+      <article class="card step">
+        <span class="badge" aria-hidden="true">C</span>
+        <div><span class="tag">Analysis and preparation</span><h3>Clear what to brush up and what to show</h3></div>
+        <p>Study the requirements and how they changed, match the technologies and experience a job asks for against your own skills, and prepare your CV and answers for a specific employer. Saved jobs are easy to compare side by side.</p>
+      </article>
+      <article class="card step">
+        <span class="badge" aria-hidden="true">D</span>
+        <div><span class="tag">Applying and tracking</span><h3>Every step of the search — in one place</h3></div>
+        <p>You send the CV yourself, and in the app you record the hiring stages, notes, dates and interview outcomes. When you apply, a copy of the job is saved with its requirements and salary as of that date. It stays available even if the listing is changed or taken down.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- SPOTLIGHT: SCHEDULED AUTO-SEARCH -->
+  <section class="section wrap" id="auto">
+    <div class="spotlight">
+      <div class="spotlight-copy">
+        <p class="eyebrow">Works without you</p>
+        <h2>Scheduled auto-search</h2>
+        <p>Set a schedule — and the app <b>looks for jobs according to your filters</b> on its own: daily, on weekdays or however suits you. It scans the connected sites, flags new and changed jobs and brings only what actually changed — no searching from scratch.</p>
+        <ul class="checklist">
+          <li>You set how often: how frequently and when to search — to your rhythm.</li>
+          <li>The search follows your saved filters and chosen companies exactly.</li>
+          <li>The result is a summary of new and changed jobs, without the noise.</li>
+        </ul>
+      </div>
+      <div class="card mock spotlight-mock">
+        <div class="mock-head">
+          <span class="t">Auto-search schedule</span>
+          <span class="pill fresh"><i class="d" aria-hidden="true"></i>Active</span>
+        </div>
+        <div class="sched-when"><span class="clock" aria-hidden="true">◷</span><span>Every weekday · <b>09:00</b></span></div>
+        <div class="sched-filters">
+          <div class="sched-lbl">Using your filters</div>
+          <div class="chips">
+            <span class="chip">Bratislava</span>
+            <span class="chip">Backend</span>
+            <span class="chip">Java</span>
+            <span class="chip">hybrid</span>
+            <span class="chip">+ 6 companies</span>
+          </div>
+        </div>
+        <div class="sched-result" aria-label="Last search summary">
+          <span class="st"><i class="d" style="background:var(--muted)" aria-hidden="true"></i>Checked <b>47 sources</b></span>
+          <span class="st"><i class="d" style="background:var(--both)" aria-hidden="true"></i><b>3</b> new</span>
+          <span class="st"><i class="d" style="background:var(--amber)" aria-hidden="true"></i><b>2</b> changed</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURE DEEP-DIVES -->
+  <section class="section wrap" id="features">
+    <div class="section-head">
+      <p class="eyebrow">Features up close</p>
+      <h2>Data you can trust</h2>
+      <p>Every feature follows one principle: show the data accurately and clearly, without guesses or speculation.</p>
+    </div>
+
+    <!-- Provenance / honesty -->
+    <div class="frow">
+      <div class="copy">
+        <p class="kicker">Source and freshness</p>
+        <h2>See where a job came from and when it was checked</h2>
+        <p>For every job the essentials are visible: the source, where it was found, when it first appeared and when it was last checked. A failed check doesn’t mark a job as closed — it’s marked closed only when that’s confirmed.</p>
+        <ul class="checklist">
+          <li>Where the job was found: on a career page, on a job board, on both, or not checked yet.</li>
+          <li>A history of changes to requirements, salary and terms — from the very start.</li>
+          <li>A freshness mark: “checked today” or “not seen for N days”.</li>
+        </ul>
+      </div>
+      <div class="card mock visual">
+        <div class="mock-head">
+          <span class="t">Source and freshness</span>
+          <span class="pill fresh"><i class="d" aria-hidden="true"></i>Checked</span>
+        </div>
+        <div class="prov" style="grid-template-columns:1fr 1fr">
+          <div class="row"><span class="k">Source</span><span class="v link">jobs.acme.dev ↗</span></div>
+          <div class="row"><span class="k">Where found</span><span class="v">On both</span></div>
+          <div class="row"><span class="k">Found</span><span class="v">03.09.2026</span></div>
+          <div class="row"><span class="k">Checked</span><span class="v">today</span></div>
+        </div>
+        <div class="diff" aria-label="Change history">
+          <div class="drow"><span class="field">Salary</span><span><span class="was">not stated</span><span class="arrow" aria-hidden="true">→</span><span class="now">from €4,200 / mo</span></span></div>
+          <div class="drow"><span class="field">Format</span><span><span class="was">on-site</span><span class="arrow" aria-hidden="true">→</span><span class="now">hybrid</span></span></div>
+          <div class="drow"><span class="field">Requirements</span><span><span class="now">+ Kubernetes</span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tech profile -->
+    <div class="frow flip">
+      <div class="copy">
+        <p class="kicker">Employer’s technologies</p>
+        <h2>Every job found at the employer, in one profile</h2>
+        <p>From the jobs found, a technology profile is built in three groups. You can see how many jobs it’s based on, and jump from any item to those jobs.</p>
+        <ul class="checklist">
+          <li>The technologies the company lists most often.</li>
+          <li>What’s needed in this particular job.</li>
+          <li>And what shows up at the company in general, but not in this job.</li>
+        </ul>
+      </div>
+      <div class="card mock visual">
+        <div class="mock-head"><span class="t">Northwind Labs · technologies</span></div>
+        <div class="techgroup core">
+          <div class="gh"><span class="dot" aria-hidden="true"></span><span class="name">Most often across the company’s jobs</span></div>
+          <div class="chips"><span class="chip">Java</span><span class="chip">Spring Boot</span><span class="chip">PostgreSQL</span><span class="chip">Kafka</span></div>
+        </div>
+        <div class="techgroup req">
+          <div class="gh"><span class="dot" aria-hidden="true"></span><span class="name">Needed in this job</span></div>
+          <div class="chips"><span class="chip">Java</span><span class="chip">gRPC</span><span class="chip">AWS</span></div>
+        </div>
+        <div class="techgroup ctx">
+          <div class="gh"><span class="dot" aria-hidden="true"></span><span class="name">At the company, but not in this job</span></div>
+          <div class="chips"><span class="chip">Kotlin</span><span class="chip">Terraform</span></div>
+        </div>
+        <p class="sample">Based on 12 jobs over 6 months · duplicates and translations counted once</p>
+      </div>
+    </div>
+
+    <!-- Salary & language -->
+    <div class="frow">
+      <div class="copy">
+        <p class="kicker">Salary and languages</p>
+        <h2>Salary and languages — exactly as in the job</h2>
+        <p>Salary is shown exactly as stated in the job: amount or range, currency, period, before or after tax. The lower-bound filter compares only comparable figures; the rest is flagged separately.</p>
+        <ul class="checklist">
+          <li>If the salary isn’t stated, it says so — that’s not zero and not a guess.</li>
+          <li>For language, you see separately: whether a language is stated and whether it’s required or only preferred.</li>
+          <li>The “English is fine” mark appears only when the job clearly implies it.</li>
+        </ul>
+      </div>
+      <div class="card mock visual">
+        <div class="mock-head"><span class="t">Salary and languages · as in the job</span></div>
+        <div class="kv">
+          <div class="item"><span class="k"><small>Salary</small>€4,200 – 5,500</span><span class="v">/ mo · before tax</span></div>
+          <div class="item"><span class="k"><small>Another job</small>€75,000 / yr</span><span class="v muted">not comparable</span></div>
+          <div class="item"><span class="k"><small>English</small>required</span><span class="v">B2+</span></div>
+          <div class="item"><span class="k"><small>German</small>stated</span><span class="v muted">preferred</span></div>
+          <div class="item"><span class="k"><small>Slovak</small>—</span><span class="v muted">not stated</span></div>
+        </div>
+        <p class="tagline-mono">Non-comparable figures are never mixed in the filter.</p>
+      </div>
+    </div>
+
+    <!-- Application tracking -->
+    <div class="frow flip">
+      <div class="copy">
+        <p class="kicker">Application tracking</p>
+        <h2>From application to outcome — nothing gets lost</h2>
+        <p>An application is saved in the app together with a copy of the job as it was when you applied. From there you track the hiring stages, notes, dates and interview outcomes.</p>
+        <ul class="checklist">
+          <li>Stages can be worked in any order — the full history is kept.</li>
+          <li>Even if the original job is taken down, your application and the saved copy remain.</li>
+          <li>In-app notifications and a regular summary of changes.</li>
+        </ul>
+      </div>
+      <div class="card mock visual">
+        <div class="mock-head"><span class="t">Northwind Labs · Senior Backend</span></div>
+        <div class="pipe">
+          <div class="pstage done"><span class="node" aria-hidden="true"></span><span class="label">Saved</span><span class="when">21.08</span></div>
+          <div class="pstage done"><span class="node" aria-hidden="true"></span><span class="label">Application sent</span><span class="when">24.08</span></div>
+          <div class="pstage done"><span class="node" aria-hidden="true"></span><span class="label">HR interview</span><span class="when">29.08</span></div>
+          <div class="pstage cur"><span class="node" aria-hidden="true"></span><span class="label">Technical interview</span><span class="when">tomorrow</span></div>
+          <div class="pstage todo"><span class="node" aria-hidden="true"></span><span class="label">Final round</span><span class="when">—</span></div>
+          <div class="pstage todo"><span class="node" aria-hidden="true"></span><span class="label">Offer</span><span class="when">—</span></div>
+        </div>
+        <p class="snapshot"><b>A copy of the job is saved</b> when you apply: the requirements and salary as of Aug 24 stay, even if the listing changes later.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section wrap" id="faq">
+    <div class="section-head">
+      <p class="eyebrow">Good to know</p>
+      <h2>Questions that matter</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>What does “job only on the company site” mean?</summary>
+        <p>It’s a job found on a company’s career page but not found on the connected job boards when checked. That mark is set only after a full check of the boards; if a board was unavailable, it shows “not checked” with a reason. The result is phrased as “not found on the boards when checked on such-and-such date,” not “not on the market.”</p>
+      </details>
+      <details>
+        <summary>Do you promise every job on the market?</summary>
+        <p>No — and we say so plainly. roleorienta covers the main boards and companies on common hiring systems, and states clearly what is and isn’t covered. Collection happens only from open pages and permitted sources; getting around access restrictions and CAPTCHAs is not part of the product.</p>
+      </details>
+      <details>
+        <summary>Where does the data come from and how current is it?</summary>
+        <p>Every job shows its source (a board or a company site), the date it was first found and the date it was last checked, plus a freshness mark. Change history is kept from the very start, so you always see what changed and when.</p>
+      </details>
+      <details>
+        <summary>How does company monitoring work?</summary>
+        <p>You choose the employers you care about, and the app regularly checks their jobs and grows the list. New and changed jobs arrive as in-app notifications and in a regular summary that shows changes, not sheer volume.</p>
+      </details>
+      <details>
+        <summary>How often does the app look for new jobs?</summary>
+        <p>You set the frequency yourself. In auto-search mode the app, on a schedule you set — for example, every weekday morning — looks for jobs according to your filters and chosen companies, then sends a summary: what’s new and what changed. No need to search again by hand.</p>
+      </details>
+      <details>
+        <summary>Do you send applications for me?</summary>
+        <p>No. You always send the application yourself — the app only helps you prepare and keep the history. Automatically sending applications or messages to employers is not part of the product.</p>
+      </details>
+      <details>
+        <summary>How does the app work out a company’s technologies?</summary>
+        <p>The app gathers every job it found at the employer and combines the technologies into one profile of three groups: what appears most often, what a specific job requires, and what occurs at the company but not in this job. Identical jobs (duplicates and translations) are counted once. It always shows how many jobs the profile is based on, and you can jump from any item to the source jobs.</p>
+      </details>
+      <details>
+        <summary>What about salary and languages?</summary>
+        <p>Salary is shown as stated in the job: amount or range, currency, period, before or after tax. The filter compares only comparable figures. For language, you see separately: whether a language is stated and whether it’s required or only preferred; “not stated” never becomes “not needed.”</p>
+      </details>
+      <details>
+        <summary>Are my applications and notes private?</summary>
+        <p>Yes. One user’s data isn’t accessible to another. Messages from users — error reports and company suggestions — don’t change data automatically: an administrator reviews them first.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- OUTRO / CTA -->
+  <section class="wrap" id="start">
+    <div class="outro">
+      <p class="eyebrow">Your next step</p>
+      <h2>Start seeing jobs <em>that others don’t.</em></h2>
+      <p>Set your niche and search parameters, pick companies to monitor, and run your whole search in one place.</p>
+      <div class="start">
+        <div>
+          <span class="lead">For the candidate</span>
+          <h4>Describe what you’re looking for</h4>
+          <p>Region, specialization, technologies — and results right away, including jobs from career pages.</p>
+        </div>
+        <div>
+          <span class="lead">Company monitoring</span>
+          <h4>Pick the companies you want</h4>
+          <p>Mark the employers — and the app will bring you new and changed jobs on its own, with source and update date.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <a class="brand" href="#top"><span class="mark" aria-hidden="true"></span>roleorienta</a>
+    <p>An app for searching, monitoring and analyzing jobs. Illustrations on this page are schematic; company names, amounts, dates and technologies are shown as examples.</p>
+  </div>
+</footer>
+
+</body>
+</html>

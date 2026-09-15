@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>roleorienta — вакансии, которых нет на общих площадках</title>
+<meta name="description" content="roleorienta объединяет вакансии с общих площадок и карьерных страниц компаний, отслеживает изменения у работодателей и помогает готовиться к отклику.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#F4F2EC; --surface:#FFFFFF; --surface-2:#FBFAF6;
+    --border:#E4DED2; --border-strong:#D4CCBC;
+    --ink:#23272E; --ink-soft:#3C424B; --muted:#6E6960;
+    --accent:#B0673A; --accent-soft:#F0E2D2; --accent-ink:#7C481F;
+    --source:#0F766E; --source-soft:#DCEBE8; --source-ink:#0B5952;
+    --hidden:#9A5B2A; --hidden-soft:#F0E2D2; --hidden-ink:#7C481F;
+    --both:#2F7D4F; --both-soft:#DCEBE0; --both-ink:#1F5A38;
+    --unknown:#8A8478; --unknown-soft:#EFECE4;
+    --amber:#B7791F; --amber-soft:#F5E7C8;
+    --serif:"Fraunces",Georgia,"Times New Roman",serif;
+    --sans:"IBM Plex Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --shadow:0 1px 2px rgba(30,25,15,.04),0 10px 30px -14px rgba(30,25,15,.16);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14171B; --surface:#1B1F25; --surface-2:#21262D;
+      --border:#2E353D; --border-strong:#3B434C;
+      --ink:#ECE6DB; --ink-soft:#C8C3B9; --muted:#969189;
+      --accent:#D89A63; --accent-soft:#33261A; --accent-ink:#E4B482;
+      --source:#58B7AC; --source-soft:#123734; --source-ink:#7FCFC5;
+      --hidden:#D79A5E; --hidden-soft:#33261A; --hidden-ink:#E4B482;
+      --both:#6BBF8A; --both-soft:#16301F; --both-ink:#9AD9B2;
+      --unknown:#7C8791; --unknown-soft:#242A31;
+      --amber:#E0B050; --amber-soft:#2C2413;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px -16px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14171B; --surface:#1B1F25; --surface-2:#21262D;
+    --border:#2E353D; --border-strong:#3B434C;
+    --ink:#ECE6DB; --ink-soft:#C8C3B9; --muted:#969189;
+    --accent:#D89A63; --accent-soft:#33261A; --accent-ink:#E4B482;
+    --source:#58B7AC; --source-soft:#123734; --source-ink:#7FCFC5;
+    --hidden:#D79A5E; --hidden-soft:#33261A; --hidden-ink:#E4B482;
+    --both:#6BBF8A; --both-soft:#16301F; --both-ink:#9AD9B2;
+    --unknown:#7C8791; --unknown-soft:#242A31;
+    --amber:#E0B050; --amber-soft:#2C2413;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 34px -16px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:80px}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  img{max-width:100%}
+  a{color:var(--accent)}
+  ::selection{background:var(--accent-soft);color:var(--accent-ink)}
+  h1,h2,h3,h4,p{margin:0}
+  .serif{font-family:var(--serif)}
+  .wrap{max-width:1140px;margin:0 auto;padding-inline:clamp(18px,4vw,40px)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+
+  /* top bar */
+  .topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .topbar-in{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-block:14px}
+  .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--serif);font-weight:600;font-size:22px;letter-spacing:-.01em}
+  .brand .mark{width:26px;height:26px;flex:none;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--source));position:relative}
+  .brand .mark::after{content:"";position:absolute;inset:8px 8px auto auto;width:7px;height:7px;border-radius:50%;background:var(--surface)}
+  .nav{display:flex;gap:24px;font-size:14px;font-weight:500}
+  .nav a{text-decoration:none;color:var(--ink-soft)}
+  .nav a:hover{color:var(--accent)}
+  .nav-cta{font-size:13.5px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--border-strong);border-radius:9px;padding:8px 14px;text-decoration:none}
+  .nav-cta:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  @media (max-width:760px){.nav{display:none}}
+
+  /* hero */
+  .hero{padding-top:clamp(40px,7vw,88px);padding-bottom:clamp(30px,5vw,56px)}
+  .hero-grid{display:grid;gap:clamp(30px,5vw,56px);align-items:center}
+  @media (min-width:900px){.hero-grid{grid-template-columns:1.05fr .95fr}}
+  .hero h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,6vw,60px);line-height:1.02;letter-spacing:-.015em;text-wrap:balance;margin:0 0 20px;color:var(--ink)}
+  .hero h1 em{font-style:italic;color:var(--accent)}
+  .standfirst{font-size:clamp(16px,2.1vw,19px);color:var(--ink-soft);max-width:52ch}
+  .standfirst b{color:var(--ink);font-weight:600}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--sans);font-size:15px;font-weight:600;text-decoration:none;border-radius:10px;padding:12px 20px;transition:transform .15s,background .15s,border-color .15s,color .15s}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent)}
+  :root[data-theme="dark"] .btn-primary,:root:not([data-theme="light"]) .btn-primary{color:#1B1209}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn-primary{color:#1B1209}}
+  .btn-primary:hover{background:var(--accent-ink)}
+  .btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--border-strong)}
+  .btn-ghost:hover{border-color:var(--ink)}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:26px;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .hero-meta span{display:inline-flex;align-items:center;gap:8px}
+  .hero-meta .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+
+  /* generic card / pills */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .pill{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:6px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+  .pill.hidden{background:var(--hidden-soft);color:var(--hidden-ink)}
+  .pill.source{background:var(--source-soft);color:var(--source-ink)}
+  .pill.both{background:var(--both-soft);color:var(--both-ink)}
+  .pill.unknown{background:var(--unknown-soft);color:var(--muted);border:1px solid var(--border)}
+  .pill.fresh{background:var(--both-soft);color:var(--both-ink)}
+  .pill.stale{background:var(--amber-soft);color:var(--amber)}
+  .pill .d{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+
+  /* hero preview card */
+  .preview{position:relative}
+  .job-card{padding:20px 20px 18px;border-left:3px solid var(--hidden)}
+  .job-card .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .job-card h3{font-family:var(--serif);font-weight:600;font-size:19px;line-height:1.2;margin:0 0 5px;color:var(--ink)}
+  .job-card .org{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:0 0 16px}
+  .prov{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;display:grid;grid-template-columns:1fr 1fr;gap:11px 14px}
+  .prov .row .k{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+  .prov .row .v{font-size:13px;color:var(--ink);font-weight:500}
+  .prov .row .v.link{color:var(--accent)}
+  .match{margin-top:14px}
+  .match .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:12px;font-weight:500;padding:4px 10px;border-radius:999px;border:1px solid var(--border-strong);color:var(--ink-soft);background:var(--surface)}
+  .chip.hit{background:var(--both-soft);color:var(--both-ink);border-color:transparent}
+  .chip.gap{background:var(--surface-2);color:var(--muted);border-style:dashed}
+  .preview .float{position:absolute;right:-10px;bottom:-18px;background:var(--ink);color:var(--bg);border-radius:12px;padding:11px 15px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600}
+  .preview .float .n{font-family:var(--serif);font-size:20px;font-weight:600}
+  .preview .float .d{width:8px;height:8px;border-radius:50%;background:var(--both);flex:none}
+  @media (max-width:520px){.preview .float{position:static;margin-top:14px}}
+  .figcap{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:26px}
+
+  /* section scaffolding */
+  section[id]{scroll-margin-top:80px}
+  .section{padding-block:clamp(48px,7vw,84px)}
+  .section-head{max-width:60ch;margin-bottom:34px}
+  .section-head h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4vw,40px);line-height:1.06;letter-spacing:-.015em;text-wrap:balance;margin:0}
+  .section-head p{font-size:clamp(15px,1.9vw,17px);color:var(--ink-soft);margin-top:14px}
+
+  /* problem callout */
+  .callout{border:1px solid var(--border-strong);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+  .callout-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:22px 24px 6px}
+  .callout-head .tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+  .callout-head h2{font-family:var(--serif);font-weight:600;font-size:clamp(21px,3vw,27px);letter-spacing:-.01em;margin:0;color:var(--ink)}
+  .callout-body{padding:10px 24px 24px;display:grid;gap:16px}
+  @media (min-width:720px){.callout-body{grid-template-columns:1fr 1fr;gap:16px 36px}}
+  .callout-body p{margin:0;font-size:15px;color:var(--ink-soft)}
+  .callout-body .lead{font-family:var(--mono);font-size:12px;letter-spacing:.03em;color:var(--accent);display:block;margin-bottom:4px}
+  .callout-body b{color:var(--ink)}
+
+  /* differentiators grid */
+  .grid-4{display:grid;gap:16px}
+  @media (min-width:640px){.grid-4{grid-template-columns:1fr 1fr}}
+  @media (min-width:980px){.grid-4{grid-template-columns:repeat(4,1fr)}}
+  .feat{padding:22px 20px 20px}
+  .feat .num{font-family:var(--serif);font-style:italic;font-size:26px;color:var(--accent);line-height:1;margin-bottom:16px;display:block}
+  .feat h3{font-family:var(--sans);font-weight:600;font-size:16.5px;line-height:1.3;margin:0 0 8px;color:var(--ink)}
+  .feat p{font-size:14px;color:var(--ink-soft);margin:0}
+
+  /* scenarios / steps */
+  .steps{display:grid;gap:16px}
+  @media (min-width:720px){.steps{grid-template-columns:1fr 1fr}}
+  .step{padding:22px 22px 20px;display:grid;grid-template-columns:auto 1fr;gap:0 16px}
+  .step .badge{font-family:var(--mono);font-weight:500;font-size:13px;width:34px;height:34px;border-radius:9px;background:var(--surface-2);border:1px solid var(--border-strong);color:var(--accent);display:flex;align-items:center;justify-content:center}
+  .step .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .step h3{font-family:var(--sans);font-weight:600;font-size:16.5px;margin:0 0 7px;color:var(--ink)}
+  .step p{grid-column:2;font-size:14px;color:var(--ink-soft);margin:0}
+  .step .badge{grid-row:span 1}
+
+  /* feature rows */
+  .frow{display:grid;gap:clamp(28px,5vw,64px);align-items:center;margin-top:clamp(40px,6vw,72px)}
+  @media (min-width:860px){.frow{grid-template-columns:1fr 1fr}.frow.flip .copy{order:2}}
+  .frow .copy h2{font-family:var(--serif);font-weight:600;font-size:clamp(23px,3.3vw,32px);line-height:1.08;letter-spacing:-.01em;margin:0 0 16px;text-wrap:balance}
+  .frow .copy p{font-size:15.5px;color:var(--ink-soft);margin:0 0 14px}
+  .frow .copy .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .checklist{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:11px}
+  .checklist li{display:flex;gap:11px;font-size:14.5px;color:var(--ink-soft)}
+  .checklist li::before{content:"✓";color:var(--both);font-weight:700;flex:none}
+
+  /* mock: provenance panel */
+  .mock{padding:22px}
+  .mock-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+  .mock-head .t{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .diff{border-top:1px solid var(--border);margin-top:14px;padding-top:14px;display:grid;gap:10px}
+  .diff .drow{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:baseline;font-size:13.5px}
+  .diff .drow .field{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .diff .was{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--border-strong)}
+  .diff .arrow{color:var(--accent);margin:0 6px}
+  .diff .now{color:var(--ink);font-weight:600}
+
+  /* mock: tech profile */
+  .techgroup+.techgroup{margin-top:14px}
+  .techgroup .gh{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+  .techgroup .gh .dot{width:9px;height:9px;border-radius:3px;flex:none}
+  .techgroup .gh .name{font-size:13px;font-weight:600;color:var(--ink)}
+  .techgroup .gh .name small{font-weight:400;color:var(--muted);font-family:var(--mono);font-size:11px;margin-left:2px}
+  .core .dot{background:var(--source)}
+  .req .dot{background:var(--accent)}
+  .ctx .dot{background:var(--unknown)}
+  .sample{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:16px;padding-top:12px;border-top:1px solid var(--border)}
+
+  /* mock: salary/lang */
+  .kv{display:grid;gap:12px}
+  .kv .item{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .kv .item:last-child{border-bottom:0;padding-bottom:0}
+  .kv .k{font-size:13.5px;color:var(--ink-soft)}
+  .kv .k small{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+  .kv .v{font-size:14px;font-weight:600;color:var(--ink);text-align:right;white-space:nowrap}
+  .kv .v.muted{color:var(--muted);font-weight:500}
+  .tagline-mono{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:16px}
+
+  /* mock: pipeline */
+  .pipe{display:flex;flex-direction:column;gap:0}
+  .pstage{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);font-size:14px}
+  .pstage:last-child{border-bottom:0}
+  .pstage .node{width:13px;height:13px;border-radius:50%;border:2px solid var(--border-strong);background:var(--surface)}
+  .pstage.done .node{background:var(--both);border-color:var(--both)}
+  .pstage.cur .node{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+  .pstage .label{color:var(--ink)}
+  .pstage.todo .label{color:var(--muted)}
+  .pstage .when{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .snapshot{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:12.5px;color:var(--muted)}
+  .snapshot b{color:var(--ink)}
+
+  /* spotlight: автопоиск по расписанию */
+  .spotlight{display:grid;gap:clamp(24px,4vw,48px);align-items:center;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);border-radius:20px;padding:clamp(28px,4vw,46px);box-shadow:var(--shadow)}
+  @media (min-width:860px){.spotlight{grid-template-columns:1.05fr .95fr}}
+  .spotlight .eyebrow{color:var(--accent-ink)}
+  .spotlight h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4vw,40px);line-height:1.06;letter-spacing:-.015em;margin:0 0 14px;color:var(--ink)}
+  .spotlight-copy>p{font-size:16px;color:var(--ink-soft);margin:0}
+  .spotlight .checklist{margin-top:18px}
+  .spotlight .checklist li::before{color:var(--accent-ink)}
+  .sched-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .sched-when{font-family:var(--mono);font-size:14px;color:var(--ink);background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+  .sched-when .clock{color:var(--accent);font-size:16px;line-height:1}
+  .sched-when b{font-weight:600}
+  .sched-filters{margin-top:14px}
+  .sched-result{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:9px 18px;font-size:13.5px;color:var(--ink-soft)}
+  .sched-result .st{display:inline-flex;align-items:center;gap:7px}
+  .sched-result .st b{color:var(--ink)}
+  .sched-result .st .d{width:8px;height:8px;border-radius:50%;flex:none}
+
+  /* FAQ */
+  .faq{max-width:860px}
+  .faq details{border-bottom:1px solid var(--border)}
+  .faq summary{cursor:pointer;list-style:none;font-size:16px;font-weight:600;color:var(--ink);padding:20px 40px 20px 0;position:relative}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:"+";position:absolute;right:6px;top:16px;font-size:22px;font-weight:400;color:var(--accent)}
+  .faq details[open] summary::after{content:"–"}
+  .faq details p{font-size:14.5px;color:var(--ink-soft);padding:0 40px 22px 0;margin:0;max-width:74ch}
+
+  /* outro */
+  .outro{background:#20242B;color:#F1ECE1;border:1px solid #2E353D;border-radius:22px;padding:clamp(36px,6vw,64px) clamp(24px,5vw,56px);text-align:center;margin-block:clamp(48px,7vw,80px)}
+  .outro .eyebrow{color:#E7A56B}
+  .outro h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4.2vw,42px);line-height:1.08;letter-spacing:-.015em;max-width:22ch;margin:0 auto;color:#F6F1E7}
+  .outro h2 em{font-style:italic;color:#E7A56B}
+  .outro>p{max-width:56ch;margin:18px auto 0;color:#CFC9BD;font-size:16px}
+  .start{display:grid;gap:22px;max-width:760px;margin:32px auto 0;text-align:left;border-top:1px solid rgba(255,255,255,.12);padding-top:28px}
+  @media (min-width:640px){.start{grid-template-columns:1fr 1fr}}
+  .start .lead{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#E7A56B;margin-bottom:8px;display:block}
+  .start h4{font-size:16px;font-weight:600;margin:0 0 6px;color:#F1ECE1}
+  .start p{font-size:14px;margin:0;color:#BDB8AC}
+
+  /* footer */
+  footer{border-top:1px solid var(--border);padding-block:32px 40px}
+  .foot-in{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+  footer p{font-size:12.5px;color:var(--muted);max-width:66ch;margin:0}
+  footer .brand{font-size:18px}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#top"><span class="mark" aria-hidden="true"></span>roleorienta</a>
+    <nav class="nav" aria-label="Разделы">
+      <a href="#why">Проблема</a>
+      <a href="#diff">Отличия</a>
+      <a href="#how">Как работает</a>
+      <a href="#auto">Автопоиск</a>
+      <a href="#features">Возможности</a>
+      <a href="#faq">Вопросы</a>
+    </nav>
+    <a class="nav-cta" href="#start">Начать</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Поиск · мониторинг · анализ вакансий</p>
+        <h1>Работа находится там,<br>куда не дотягиваются <em>общие площадки.</em></h1>
+        <p class="standfirst">roleorienta объединяет вакансии с общих площадок и <b>карьерных страниц компаний</b>, отслеживает изменения у работодателей и помогает готовиться к отклику.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#how">Как это работает <span aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="#features">Возможности</a>
+        </div>
+        <div class="hero-meta">
+          <span><i class="dot" aria-hidden="true"></i>Источник и актуальность — на виду</span>
+          <span><i class="dot" aria-hidden="true"></i>История «было → стало»</span>
+          <span><i class="dot" aria-hidden="true"></i>Отклики — в одном месте</span>
+        </div>
+      </div>
+
+      <figure class="preview" style="margin:0">
+        <div class="card job-card">
+          <div class="tags">
+            <span class="pill hidden"><i class="d" aria-hidden="true"></i>Только на сайте компании</span>
+            <span class="pill fresh">Проверена сегодня</span>
+          </div>
+          <h3>Senior Backend Engineer</h3>
+          <p class="org">Northwind Labs · карьерная страница</p>
+          <div class="prov" aria-label="Источник и актуальность">
+            <div class="row"><span class="k">Источник</span><span class="v link">careers.northwind.io ↗</span></div>
+            <div class="row"><span class="k">Где найдена</span><span class="v">Не найдена на площадках</span></div>
+            <div class="row"><span class="k">Найдена</span><span class="v">14 дней назад</span></div>
+            <div class="row"><span class="k">Зарплата</span><span class="v">не указана</span></div>
+          </div>
+          <div class="match">
+            <div class="lbl">Совпадение с Вашим профилем</div>
+            <div class="chips">
+              <span class="chip hit">Java ✓</span>
+              <span class="chip hit">PostgreSQL ✓</span>
+              <span class="chip hit">Spring ✓</span>
+              <span class="chip gap">Kafka · подтянуть</span>
+            </div>
+          </div>
+        </div>
+        <div class="float" aria-hidden="true"><span class="d"></span><span class="n">7</span>&nbsp;новых вакансий с карьерных страниц</div>
+        <figcaption class="figcap">Пример карточки вакансии. Данные приведены схематично.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- WHY / PROBLEM -->
+  <section class="section wrap" id="why">
+    <div class="callout" role="region" aria-label="Проблема">
+      <div class="callout-head">
+        <span class="tag">Почему обычного поиска мало</span>
+        <h2>Часть подходящих вакансий Вы просто не видите</h2>
+      </div>
+      <div class="callout-body">
+        <p><span class="lead">Слепая зона</span>Многие работодатели публикуют вакансии <b>только на своих сайтах</b> — на общие площадки они не попадают. Подходящая вакансия есть, но её не видно там, где Вы привыкли искать.</p>
+        <p><span class="lead">Вручную всё не охватить</span>Чтобы не упустить такие вакансии, нужно знать десятки компаний, регулярно заходить на их страницы и <b>держать всё в голове</b>. Такой поиск трудно вести постоянно.</p>
+        <p><span class="lead">Перегруженная выдача</span>Интерфейсы общих площадок перегружены, одни и те же вакансии повторяются, а <b>источник и актуальность</b> объявления почти не разглядеть.</p>
+        <p><span class="lead">Всё разрознено</span>Отклики, заметки и история требований разбросаны по таблицам и закладкам. Собрать всё вместе к собеседованию — отдельная работа.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIFFERENTIATORS -->
+  <section class="section wrap" id="diff">
+    <div class="section-head">
+      <p class="eyebrow">Что делает roleorienta</p>
+      <h2>Четыре вещи, которые общие площадки делают плохо</h2>
+      <p>roleorienta работает не вширь, а вглубь: под Вашу нишу и Ваших работодателей — и показывает ровно то, что нашёл.</p>
+    </div>
+    <div class="grid-4">
+      <article class="card feat">
+        <span class="num" aria-hidden="true">01</span>
+        <h3>Глубина в узкой нише</h3>
+        <p>Источники подобраны под Вашу специализацию и рынок — ничего постороннего.</p>
+      </article>
+      <article class="card feat">
+        <span class="num" aria-hidden="true">02</span>
+        <h3>Мониторинг изменений</h3>
+        <p>Не разовый поиск, а постоянное наблюдение за компаниями: как меняются требования, зарплата и условия.</p>
+      </article>
+      <article class="card feat">
+        <span class="num" aria-hidden="true">03</span>
+        <h3>Достоверные данные</h3>
+        <p>У каждой вакансии видно, откуда она и когда её проверяли. Если данных нет — так и написано; приложение не додумывает за источник.</p>
+      </article>
+      <article class="card feat">
+        <span class="num" aria-hidden="true">04</span>
+        <h3>Все найденные вакансии компании</h3>
+        <p>Все найденные вакансии работодателя собираются вместе и складываются в профиль технологий — чтобы понять, что подчеркнуть в резюме и на собеседовании.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS / SCENARIOS -->
+  <section class="section wrap" id="how">
+    <div class="section-head">
+      <p class="eyebrow">Как работает</p>
+      <h2>Путь от первой вакансии до результата собеседования</h2>
+      <p>Четыре сценария, ради которых сделан продукт, — и все они собраны в одном понятном интерфейсе.</p>
+    </div>
+    <div class="steps">
+      <article class="card step">
+        <span class="badge" aria-hidden="true">A</span>
+        <div><span class="tag">Первый поиск</span><h3>Результат сразу, а не пустой экран</h3></div>
+        <p>Задайте регион, специализацию, нужные технологии и формат работы — и сразу увидите актуальные вакансии из сохранённого и автоматически пополняемого списка работодателей. Среди вакансий будут предложения с карьерных страниц. Подходящие компании можно добавить в мониторинг.</p>
+      </article>
+      <article class="card step">
+        <span class="badge" aria-hidden="true">B</span>
+        <div><span class="tag">Подписка и мониторинг</span><h3>Мониторинг компаний — всегда актуальная картина</h3></div>
+        <p>Сохраните поиск и выберите интересные компании. Дальше приложение <b>по заданному Вами расписанию</b> само ищет вакансии в соответствии с Вашими фильтрами, пополняет список работодателей и показывает новые и изменившиеся вакансии — с источником, датой обновления, зарплатой и языковыми требованиями.</p>
+      </article>
+      <article class="card step">
+        <span class="badge" aria-hidden="true">C</span>
+        <div><span class="tag">Анализ и подготовка</span><h3>Понятно, что подтянуть и что показать</h3></div>
+        <p>Изучайте требования и историю их изменений, сопоставляйте требуемые в вакансии технологии и опыт со своими навыками, готовьте резюме и ответы под конкретного работодателя. Сохранённые вакансии удобно сравнивать между собой.</p>
+      </article>
+      <article class="card step">
+        <span class="badge" aria-hidden="true">D</span>
+        <div><span class="tag">Отклик и ведение</span><h3>Все шаги поиска — в одном месте</h3></div>
+        <p>Резюме Вы отправляете сами, а в приложении фиксируете этапы отбора, заметки, даты и результаты собеседований. При отклике сохраняется копия вакансии с требованиями и зарплатой на эту дату. Она останется доступной, даже если объявление изменят или закроют.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- SPOTLIGHT: АВТОПОИСК ПО РАСПИСАНИЮ -->
+  <section class="section wrap" id="auto">
+    <div class="spotlight">
+      <div class="spotlight-copy">
+        <p class="eyebrow">Работает без Вас</p>
+        <h2>Автопоиск по расписанию</h2>
+        <p>Задайте расписание — и приложение <b>само ищет вакансии в соответствии с Вашими фильтрами</b>: ежедневно, по будням или как удобно Вам. Оно просматривает подключённые сайты, отмечает новые и изменившиеся вакансии и приносит только то, что действительно поменялось, — не заставляя искать заново.</p>
+        <ul class="checklist">
+          <li>Периодичность задаёте Вы: как часто и когда искать — под Ваш ритм.</li>
+          <li>Поиск идёт строго в соответствии с сохранёнными фильтрами и выбранными компаниями.</li>
+          <li>Результат — сводка новых и изменившихся вакансий, без лишнего шума.</li>
+        </ul>
+      </div>
+      <div class="card mock spotlight-mock">
+        <div class="mock-head">
+          <span class="t">Расписание автопоиска</span>
+          <span class="pill fresh"><i class="d" aria-hidden="true"></i>Активно</span>
+        </div>
+        <div class="sched-when"><span class="clock" aria-hidden="true">◷</span><span>Каждый будний день · <b>09:00</b></span></div>
+        <div class="sched-filters">
+          <div class="sched-lbl">С учётом Ваших фильтров</div>
+          <div class="chips">
+            <span class="chip">Bratislava</span>
+            <span class="chip">Backend</span>
+            <span class="chip">Java</span>
+            <span class="chip">гибрид</span>
+            <span class="chip">+ 6 компаний</span>
+          </div>
+        </div>
+        <div class="sched-result" aria-label="Итог последнего поиска">
+          <span class="st"><i class="d" style="background:var(--muted)" aria-hidden="true"></i>Проверено <b>47 источников</b></span>
+          <span class="st"><i class="d" style="background:var(--both)" aria-hidden="true"></i><b>3</b> новые</span>
+          <span class="st"><i class="d" style="background:var(--amber)" aria-hidden="true"></i><b>2</b> изменились</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURE DEEP-DIVES -->
+  <section class="section wrap" id="features">
+    <div class="section-head">
+      <p class="eyebrow">Возможности крупным планом</p>
+      <h2>Данные, которым можно доверять</h2>
+      <p>Каждая функция подчинена одному принципу: показывать данные точно и понятно, без догадок и домыслов.</p>
+    </div>
+
+    <!-- Provenance / honesty -->
+    <div class="frow">
+      <div class="copy">
+        <p class="kicker">Источник и актуальность</p>
+        <h2>Видно, откуда вакансия и когда её проверяли</h2>
+        <p>У каждой вакансии видно главное: источник, где она найдена, когда впервые появилась и когда её проверяли в последний раз. Если очередная проверка не прошла, вакансия не считается закрытой — закрытой её отмечают, только когда это подтверждается.</p>
+        <ul class="checklist">
+          <li>Где найдена вакансия: на карьерной странице, на площадке, и там и там, или ещё не проверено.</li>
+          <li>История изменений требований, зарплаты и условий — с самого начала.</li>
+          <li>Отметка актуальности: «проверена сегодня» или «не встречалась N дней».</li>
+        </ul>
+      </div>
+      <div class="card mock visual">
+        <div class="mock-head">
+          <span class="t">Источник и актуальность</span>
+          <span class="pill fresh"><i class="d" aria-hidden="true"></i>Проверена</span>
+        </div>
+        <div class="prov" style="grid-template-columns:1fr 1fr">
+          <div class="row"><span class="k">Источник</span><span class="v link">jobs.acme.dev ↗</span></div>
+          <div class="row"><span class="k">Где найдена</span><span class="v">И там, и там</span></div>
+          <div class="row"><span class="k">Найдена</span><span class="v">03.09.2026</span></div>
+          <div class="row"><span class="k">Проверена</span><span class="v">сегодня</span></div>
+        </div>
+        <div class="diff" aria-label="История изменений">
+          <div class="drow"><span class="field">Зарплата</span><span><span class="was">не указана</span><span class="arrow" aria-hidden="true">→</span><span class="now">от 4 200 € / мес</span></span></div>
+          <div class="drow"><span class="field">Формат</span><span><span class="was">офис</span><span class="arrow" aria-hidden="true">→</span><span class="now">гибрид</span></span></div>
+          <div class="drow"><span class="field">Требования</span><span><span class="now">+ Kubernetes</span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tech profile -->
+    <div class="frow flip">
+      <div class="copy">
+        <p class="kicker">Технологии работодателя</p>
+        <h2>Все найденные вакансии работодателя в одном профиле</h2>
+        <p>На основе найденных вакансий строится профиль технологий из трёх групп. Видно, по скольким вакансиям он построен, и от каждого пункта можно перейти к этим вакансиям.</p>
+        <ul class="checklist">
+          <li>Технологии, которые компания указывает чаще всего.</li>
+          <li>Что нужно именно в этой вакансии.</li>
+          <li>И что встречается у компании в целом, но не в этой вакансии.</li>
+        </ul>
+      </div>
+      <div class="card mock visual">
+        <div class="mock-head"><span class="t">Northwind Labs · технологии</span></div>
+        <div class="techgroup core">
+          <div class="gh"><span class="dot" aria-hidden="true"></span><span class="name">Чаще всего в вакансиях компании</span></div>
+          <div class="chips"><span class="chip">Java</span><span class="chip">Spring Boot</span><span class="chip">PostgreSQL</span><span class="chip">Kafka</span></div>
+        </div>
+        <div class="techgroup req">
+          <div class="gh"><span class="dot" aria-hidden="true"></span><span class="name">Нужно в этой вакансии</span></div>
+          <div class="chips"><span class="chip">Java</span><span class="chip">gRPC</span><span class="chip">AWS</span></div>
+        </div>
+        <div class="techgroup ctx">
+          <div class="gh"><span class="dot" aria-hidden="true"></span><span class="name">Есть у компании, но не в этой вакансии</span></div>
+          <div class="chips"><span class="chip">Kotlin</span><span class="chip">Terraform</span></div>
+        </div>
+        <p class="sample">По 12 вакансиям за 6 месяцев · повторы и переводы учтены один раз</p>
+      </div>
+    </div>
+
+    <!-- Salary & language -->
+    <div class="frow">
+      <div class="copy">
+        <p class="kicker">Зарплата и языки</p>
+        <h2>Зарплата и языки — как в самой вакансии</h2>
+        <p>Зарплата показывается так, как указана в вакансии: сумма или диапазон, валюта, период, до вычета налогов или на руки. Фильтр по нижней границе сравнивает только сопоставимые величины, остальное отмечается отдельно.</p>
+        <ul class="checklist">
+          <li>Если зарплата не указана, так и написано — это не ноль и не догадка.</li>
+          <li>По языку видно отдельно: указан ли язык и обязателен ли он или только желателен.</li>
+          <li>Пометка «можно на английском» — только когда это прямо следует из вакансии.</li>
+        </ul>
+      </div>
+      <div class="card mock visual">
+        <div class="mock-head"><span class="t">Зарплата и языки · как в вакансии</span></div>
+        <div class="kv">
+          <div class="item"><span class="k"><small>Зарплата</small>4 200 – 5 500 €</span><span class="v">/ мес · до налогов</span></div>
+          <div class="item"><span class="k"><small>Другая вакансия</small>75 000 € / год</span><span class="v muted">несопоставимо</span></div>
+          <div class="item"><span class="k"><small>Английский</small>требуется</span><span class="v">B2+</span></div>
+          <div class="item"><span class="k"><small>Немецкий</small>указан</span><span class="v muted">желателен</span></div>
+          <div class="item"><span class="k"><small>Словацкий</small>—</span><span class="v muted">не указан</span></div>
+        </div>
+        <p class="tagline-mono">Несопоставимые величины в фильтре не смешиваются.</p>
+      </div>
+    </div>
+
+    <!-- Application tracking -->
+    <div class="frow flip">
+      <div class="copy">
+        <p class="kicker">Ведение откликов</p>
+        <h2>От отклика до результата — ничего не теряется</h2>
+        <p>Отклик сохраняется в приложении вместе с копией вакансии на момент отклика. Дальше Вы ведёте этапы отбора, заметки, даты и результаты собеседований.</p>
+        <ul class="checklist">
+          <li>Этапы можно проходить в любом порядке — история сохраняется целиком.</li>
+          <li>Даже если исходную вакансию закроют, Ваш отклик и сохранённая копия останутся.</li>
+          <li>Уведомления внутри приложения и регулярная сводка изменений.</li>
+        </ul>
+      </div>
+      <div class="card mock visual">
+        <div class="mock-head"><span class="t">Northwind Labs · Senior Backend</span></div>
+        <div class="pipe">
+          <div class="pstage done"><span class="node" aria-hidden="true"></span><span class="label">Сохранена</span><span class="when">21.08</span></div>
+          <div class="pstage done"><span class="node" aria-hidden="true"></span><span class="label">Отклик отправлен</span><span class="when">24.08</span></div>
+          <div class="pstage done"><span class="node" aria-hidden="true"></span><span class="label">HR-собеседование</span><span class="when">29.08</span></div>
+          <div class="pstage cur"><span class="node" aria-hidden="true"></span><span class="label">Техническое собеседование</span><span class="when">завтра</span></div>
+          <div class="pstage todo"><span class="node" aria-hidden="true"></span><span class="label">Финал</span><span class="when">—</span></div>
+          <div class="pstage todo"><span class="node" aria-hidden="true"></span><span class="label">Предложение</span><span class="when">—</span></div>
+        </div>
+        <p class="snapshot"><b>Копия вакансии сохранена</b> при отклике: требования и зарплата на 24.08 останутся, даже если объявление потом изменят.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section wrap" id="faq">
+    <div class="section-head">
+      <p class="eyebrow">Полезно знать</p>
+      <h2>Вопросы, которые важны</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Что значит «вакансия только на сайте компании»?</summary>
+        <p>Это вакансия, найденная на карьерной странице компании, но не найденная на подключённых площадках при проверке. Такая пометка ставится только после полной проверки площадок; если площадка была недоступна, показывается «не проверено» с причиной. Итог формулируется как «не найдена на площадках при проверке от такой-то даты», а не «нет на рынке».</p>
+      </details>
+      <details>
+        <summary>Вы обещаете все вакансии рынка?</summary>
+        <p>Нет — и мы говорим об этом прямо. roleorienta собирает основные площадки и компании на распространённых системах найма и прямо говорит, что охвачено, а что нет. Сбор идёт только с открытых страниц и разрешённых источников; обход ограничений доступа и CAPTCHA в продукт не входит.</p>
+      </details>
+      <details>
+        <summary>Откуда данные и насколько они актуальны?</summary>
+        <p>У каждой вакансии виден источник (площадка или сайт компании), дата, когда её нашли впервые, и дата последней проверки, а также отметка актуальности. История изменений ведётся с самого начала, поэтому Вы всегда видите, что и когда поменялось.</p>
+      </details>
+      <details>
+        <summary>Как работает мониторинг компаний?</summary>
+        <p>Вы выбираете интересных работодателей, а приложение регулярно проверяет их вакансии и пополняет список. Новые и изменившиеся вакансии приходят в уведомлениях внутри приложения и в регулярной сводке, которая показывает изменения, а не общий объём.</p>
+      </details>
+      <details>
+        <summary>Как часто приложение ищет новые вакансии?</summary>
+        <p>Периодичность Вы указываете сами. В режиме автопоиска приложение по заданному Вами расписанию — например, каждое утро по будням — само ищет вакансии в соответствии с Вашими фильтрами и выбранными компаниями, а затем присылает сводку: что появилось нового и что изменилось. Искать заново вручную не нужно.</p>
+      </details>
+      <details>
+        <summary>Вы отправляете отклики за меня?</summary>
+        <p>Нет. Отклик Вы всегда отправляете сами — приложение лишь помогает подготовиться и вести историю. Автоматическая рассылка откликов и сообщений работодателям в продукт не входит.</p>
+      </details>
+      <details>
+        <summary>Как приложение определяет технологии компании?</summary>
+        <p>Приложение собирает все найденные вакансии работодателя и объединяет технологии в один профиль из трёх групп: что встречается чаще всего, что требуется в конкретной вакансии и что бывает у компании, но не в этой вакансии. Одинаковые вакансии (повторы и переводы) считаются один раз. Всегда видно, по скольким вакансиям построен профиль, и от каждого пункта можно перейти к исходным вакансиям.</p>
+      </details>
+      <details>
+        <summary>Что с зарплатой и языками?</summary>
+        <p>Зарплата показывается так, как указана в вакансии: сумма или диапазон, валюта, период, до вычета налогов или на руки. Фильтр сравнивает только сопоставимые величины. По языку видно отдельно: указан ли язык и обязателен ли он или только желателен; «не указан» не превращается в «не нужен».</p>
+      </details>
+      <details>
+        <summary>Мои отклики и заметки приватны?</summary>
+        <p>Да. Данные одного пользователя недоступны другому. Сообщения от пользователей — отчёты об ошибках и предложения компаний — не меняют данные автоматически: их сначала проверяет администратор.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- OUTRO / CTA -->
+  <section class="wrap" id="start">
+    <div class="outro">
+      <p class="eyebrow">Ваш следующий шаг</p>
+      <h2>Начните видеть вакансии, <em>которых не видят другие.</em></h2>
+      <p>Задайте свою нишу и параметры поиска, выберите компании для мониторинга и ведите весь поиск в одном месте.</p>
+      <div class="start">
+        <div>
+          <span class="lead">Кандидату</span>
+          <h4>Опишите, что ищете</h4>
+          <p>Регион, специализация, технологии — и результат сразу, включая вакансии с карьерных страниц.</p>
+        </div>
+        <div>
+          <span class="lead">Мониторинг компаний</span>
+          <h4>Выберите нужные компании</h4>
+          <p>Отметьте работодателей — и приложение само принесёт новые и изменившиеся вакансии с источником и датой обновления.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <a class="brand" href="#top"><span class="mark" aria-hidden="true"></span>roleorienta</a>
+    <p>Приложение для поиска, мониторинга и анализа вакансий. Иллюстрации на странице схематичны; названия компаний, суммы, даты и технологии приведены для примера.</p>
+  </div>
+</footer>
+
+</body>
+</html>
